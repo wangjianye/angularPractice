@@ -1,0 +1,36 @@
+<div class="filter-body">
+  <div class="filter-header-name">{{headerName}}</div>
+  <div class="filter-type">
+    <ng-container *ngIf="filterTypeList && filterTypeList.length>0">
+      <select class="custom-select" [(ngModel)]="filterTypeEn" name="filterTypeEn" [disabled]="filterTypeList.length <2"
+              (ngModelChange)="onChange()">
+        <option *ngFor="let option of filterTypeList" value="{{option.en}}">
+          {{option.cn}}
+        </option>
+      </select>
+    </ng-container>
+  </div>
+  <div class="filter-value">
+    <ng-container *ngIf="fieldType=='string'">
+      <ng-container *ngIf="inputType=='input'">
+        <input #input (keyup.enter)="onChange()" nz-input [(ngModel)]="text" name="input">
+      </ng-container>
+      <ng-container *ngIf="inputType=='select'">
+        <nz-select style="min-width: 8rem" [nzAllowClear]="true" [nzShowSearch]="true" [(ngModel)]="text"
+                   (ngModelChange)="onChange()">
+          <nz-option *ngFor="let option of select.dataList" [nzLabel]="option[select.label]"
+                     [nzValue]="option[select.value]">
+          </nz-option>
+        </nz-select>
+      </ng-container>
+    </ng-container>
+    <ng-container *ngIf="fieldType=='date'">
+
+      <nz-date-picker [(ngModel)]="text" (ngModelChange)="onChange()"></nz-date-picker>
+    </ng-container>
+    <ng-container *ngIf="fieldType=='datetime'">
+
+      <nz-date-picker [(ngModel)]="text" nzShowTime (nzOnOk)="onChange()"></nz-date-picker>
+    </ng-container>
+  </div>
+</div>

@@ -1,0 +1,10 @@
+<ng-container *ngFor="let item of buttonsSlice2">
+    <button nz-button nzType="primary" [nzSize]="'small'" (click)="invokeParentMethod(item,$event)"><i nz-icon type="{{item.icon}}"></i>{{item.text}}</button>
+</ng-container>
+<nz-dropdown [nzPlacement]="'bottomRight'" [nzTrigger]="'click'" *ngIf="buttonsAfter2 && buttonsAfter2.length>0">
+  <button nz-button nzType="primary" nz-dropdown [nzSize]="'small'" ><i nz-icon type="ellipsis" theme="outline"></i>更多</button>
+  <ul nz-menu class="operation-menu">
+    <li nz-menu-item *ngFor="let item of    buttonsAfter2"  (click)="invokeParentMethod(item,$event)">{{item.text}}</li>
+  </ul>
+</nz-dropdown>
+

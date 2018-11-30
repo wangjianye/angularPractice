@@ -1,0 +1,33 @@
+@import '~@delon/theme/styles/default';
+.grid-config {
+  background: #00A0E9;
+  height: 120px;
+  font-size: 13px;
+}
+ag-grid-angular{
+  font-size: 14px;
+}
+
+.saveForm{
+  font-size: 15px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  ::ng-deep{
+    label[nz-checkbox] {
+      margin-left: 0;
+    }
+    nz-form-item{
+      width: 50%;
+      display: flex;
+    }
+    nz-form-label{
+      width:4rem;
+    }
+    nz-form-control{
+      flex: 1;
+    }
+  }
+
+}
+

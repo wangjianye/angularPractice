@@ -1,0 +1,46 @@
+<div class="p-1">
+  <button nz-button [nzType]="'primary'" (click)="openAddWin(saveWin)">
+    <i class="anticon anticon-plus"></i>添加
+  </button>
+  <button nz-button [nzType]="'primary'" (click)="mainTable.getData()">
+    <i nz-icon type="search"></i>查询
+  </button>
+</div>
+<w-table #mainTable [url]="'/sys/user/list'" [context]="this" [columns]="getColumns()"></w-table>
+<nz-modal [(nzVisible)]="saveWin.isShow"
+          [nzTitle]="saveWin.title"
+          (nzOnOk)="postSaveData()"
+          [nzBodyStyle]="{ maxHeight: '70vh', 'overflow-y': 'scroll'}"
+          [nzWidth]="'90vw'"
+          (nzOnCancel)="saveWin.isShow=false">
+  <form nz-form class="saveForm" nz-row  >
+    <w-input label="登录名" nz-col   >
+      <input nz-input [(ngModel)]="saveData.loginName" name="loginName" required>
+    </w-input>
+    <w-input label="工号" nz-col   >
+      <input nz-input [(ngModel)]="saveData.no" name="no">
+    </w-input>
+    <w-input label="密码" nz-col   >
+      <input nz-input [(ngModel)]="saveData.password" name="password" type="password">
+    </w-input>
+    <w-input label="确认密码" nz-col   >
+      <input nz-input [(ngModel)]="saveData.confirmPassword" name="confirmPassword" type="password">
+    </w-input>
+    <w-input label="姓名" nz-col >
+      <input nz-input [(ngModel)]="saveData.name" name="name">
+    </w-input>
+    <w-input label="邮箱" nz-col >
+      <input nz-input [(ngModel)]="saveData.email" name="email">
+    </w-input>
+    <w-input label="电话" nz-col >
+      <input nz-input [(ngModel)]="saveData.phone" name="phone">
+    </w-input>
+    <w-input label="手机" nz-col >
+      <input nz-input [(ngModel)]="saveData.mobile" name="phone">
+    </w-input>
+    <w-input   label="角色" nz-col [nzSpan]="24">
+      <nz-checkbox-group [(ngModel)]="roleList" name="rolelist"></nz-checkbox-group>
+    </w-input>
+  </form>
+</nz-modal>
+

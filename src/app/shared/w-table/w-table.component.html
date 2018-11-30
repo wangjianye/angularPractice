@@ -1,0 +1,38 @@
+<div class="p-1">
+  <ng-container *ngFor="let tag of filterModel | keyvalue">
+    <nz-tag [nzColor]="'geekblue'" nzMode="closeable"
+            *ngIf="tag.value.value" (nzOnClose)="onWhereTagClose(tag)">
+      {{tag.value.headerName}}
+      <ng-container *ngIf="tag.value.filterType.en!='equals'">
+        <span class="text-info">({{tag.value.filterType.cn}})</span>
+      </ng-container>
+      <ng-container [ngSwitch]="tag.value.fieldType">
+        <ng-container *ngSwitchCase="'date'">
+          {{tag.value.value |date:'yyyy-MM-dd'}}
+        </ng-container>
+        <ng-container *ngSwitchCase="'datetime'">
+          {{tag.value.value |date:'yyyy-MM-dd HH:mm:ss'}}
+        </ng-container>
+        <ng-container *ngSwitchDefault>
+          :{{tag.value.value}}
+        </ng-container>
+      </ng-container>
+    </nz-tag>
+  </ng-container>
+</div>
+
+<ag-grid-angular #grid
+                 style="width: 100%; height: calc(100vh - 150px);"
+                 class="ag-theme-material"
+                 [rowData]="rows"
+                 [rowHeight]="50"
+                 [headerHeight]="50"
+                 [rowSelection]="'single'"
+                 [animateRows]="true">
+</ag-grid-angular>
+<nz-pagination [(nzPageIndex)]="page.pageIndex" [(nzPageSize)]="page.pageSize"
+               [nzTotal]="page.total"
+               nzShowSizeChanger nzShowQuickJumper
+               (nzPageIndexChange)="getData()"
+               (nzPageSizeChange)="getData()"
+></nz-pagination>
