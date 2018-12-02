@@ -4,6 +4,7 @@ import { _HttpClient } from '@delon/theme';
 import { OperationRenderComponent } from '@shared/cell-render/operation-render/operation-render.component';
 import { TextFilterComponent } from '@shared/grid-filter/text-filter/text-filter.component';
 import * as _ from 'lodash';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'w-table',
@@ -47,7 +48,7 @@ export class WTableComponent implements OnInit {
     noRowsToShow: '没有数据可显示',
   };
 
-  constructor(public http: _HttpClient) {
+  constructor(public http: _HttpClient,private http2: HttpClient) {
   }
 
   ngOnInit() {
@@ -76,11 +77,15 @@ export class WTableComponent implements OnInit {
   }
 
   getData() {
-    this.http.post('/sys/user/list', this.getSearchData()).subscribe((data: any) => {
-      this.rows = data.list;
-      this.page.total = data.total;
+    console.log(this.url,'cc');
+    if(this.url)
+    {
+      this.http2.post(this.url, this.getSearchData()).subscribe((data: any) => {
+        this.rows = data.list;
+        this.page.total = data.total;
+      });
+    }
 
-    });
   }
 
   getSearchData() {
@@ -114,7 +119,8 @@ export class WTableComponent implements OnInit {
 
     }
 
-    return searchData;
+   // return searchData;
+    return _.cloneDeep(searchData);
   }
 
 }

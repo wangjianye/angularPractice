@@ -23,7 +23,8 @@ import * as moment from 'moment';
  */
 @Injectable()
 export class DefaultInterceptor implements HttpInterceptor {
-  constructor(private injector: Injector) {}
+  constructor(private injector: Injector) {
+  }
 
   get msg(): NzMessageService {
     return this.injector.get(NzMessageService);
@@ -39,6 +40,7 @@ export class DefaultInterceptor implements HttpInterceptor {
 
     // 可能会因为 `throw` 导出无法执行 `_HttpClient` 的 `end()` 操作
     this.injector.get(_HttpClient).end();
+    console.log(event);
     // 业务处理：一些通用操作
     switch (event.status) {
       case 200:
@@ -47,10 +49,9 @@ export class DefaultInterceptor implements HttpInterceptor {
         //  错误内容：{ status: 1, msg: '非法参数' }
         //  正确内容：{ status: 0, response: {  } }
         // 则以下代码片断可直接适用
-        if(event instanceof  HttpResponse)
-        {
-          const  body:any=event.body;
-          if (body.code){
+        if (event instanceof HttpResponse) {
+          const body: any = event.body;
+          if (body.code) {
             this.msg.error(body.msg);
             return throwError({});
           }
@@ -77,7 +78,7 @@ export class DefaultInterceptor implements HttpInterceptor {
       case 403:
       case 404:
       case 500:
-       // this.goTo(`/${event.status}`);
+        // this.goTo(`/${event.status}`);
         break;
       default:
         if (event instanceof HttpErrorResponse) {
@@ -95,14 +96,13 @@ export class DefaultInterceptor implements HttpInterceptor {
   intercept(
     req: HttpRequest<any>,
     next: HttpHandler,
-  ): Observable<
-    | HttpSentEvent
+  ): Observable<| HttpSentEvent
     | HttpHeaderResponse
     | HttpProgressEvent
     | HttpResponse<any>
-    | HttpUserEvent<any>
-  > {
+    | HttpUserEvent<any>> {
     // 统一加上服务端前缀
+    console.log(req);
     let url = req.url;
     if (!url.startsWith('https://') && !url.startsWith('http://')) {
       url = environment.SERVER_URL + url;
@@ -111,13 +111,25 @@ export class DefaultInterceptor implements HttpInterceptor {
     const newReq = req.clone({
       url: url,
     });
-    if (newReq.body)
-    {
-       this.shiftDates(newReq.body);
-       console.log(newReq.body);
+    if (newReq.body) {
+      this.shiftDates(newReq.body);
     }
     return next.handle(newReq).pipe(
       mergeMap((event: any) => {
+        if (event instanceof HttpResponse) {
+          // @ts-ignore
+          if (newReq.responseType == 'arrayBuffer') {// 若请求时预期的响应类型是arrayBuffer
+            let contentType = event.headers.get('content-type');// 读取服务端的传递过来的content-type值,服务端需要允许客户端读取该请求头才可以读取成功
+            if (contentType && contentType.indexOf('application/json') >= 0) {
+              let decoder = new TextDecoder('utf-8');
+              let body = JSON.parse(decoder.decode(new Uint8Array(event.body)));// 将二进制值转换为json
+              // 创建新的event，并将新的body给新的event对象
+              event = event.clone({
+                body: body,
+              });
+            }
+          }
+        }
         // 允许统一对请求错误处理，这是因为一个请求若是业务上错误的情况下其HTTP请求的状态是200的情况下需要
         if (event instanceof HttpResponse && event.status === 200)
           return this.handleData(event);

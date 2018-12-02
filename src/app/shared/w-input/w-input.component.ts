@@ -12,14 +12,8 @@ export class WInputComponent implements OnInit {
    _label='';
    _labelTpl:TemplateRef<any>;
   constructor( el: ElementRef,public changeDetectorRef:ChangeDetectorRef,@Optional() @Host()public col:NzColDirective) {
-      console.log(el);
       this.el=el.nativeElement;
-      console.log(this.col);
-      console.log();
-
-
   }
-  lines = 3;
   ngOnInit() {
     if(this.col && !this.col.nzSpan)
     {

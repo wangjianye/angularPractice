@@ -5,6 +5,9 @@
   <button nz-button [nzType]="'primary'" (click)="mainTable.getData()">
     <i nz-icon type="search"></i>查询
   </button>
+  <button nz-button [nzType]="'primary'" (click)="export()">
+    <i nz-icon type="search"></i>导出
+  </button>
 </div>
 <w-table #mainTable [url]="'/sys/user/list'" [context]="this" [columns]="getColumns()"></w-table>
 <nz-modal [(nzVisible)]="saveWin.isShow"

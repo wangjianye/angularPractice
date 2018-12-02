@@ -1,74 +1,81 @@
 import { AfterViewInit, Component, Host, HostBinding, HostListener, Injector, OnInit, Optional, ViewChild } from '@angular/core';
 import { BasePage } from '@core/utils/basePage';
 import * as _ from 'lodash';
-import { AgGridNg2 } from '../../../../../node_modules/ag-grid-angular';
 import { WTableComponent } from '@shared/w-table/w-table.component';
-import { FormBuilder } from '@angular/forms';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-sys-user',
   templateUrl: './user.component.html',
   styleUrls: ['./user.component.less'],
 })
-export class SysUserComponent extends BasePage implements OnInit {
-  @ViewChild('mainTable') mainTable:WTableComponent;
-  saveWin={
-    isShow:false,
-    title:'添加'
+export class SysUserComponent extends BasePage implements OnInit,AfterViewInit {
+  @ViewChild('mainTable') mainTable: WTableComponent;
+  saveWin = {
+    isShow: false,
+    title: '添加',
   };
   url = `/user`;
   saveData: any = {};
   roleList: any[] = [];
-  userList:any[]=[];
-  constructor(protected injector: Injector) {
+  userList: any[] = [];
+
+  constructor(protected injector: Injector, private http2: HttpClient) {
     super(injector);
+  }
+  ngAfterViewInit(): void {
+    this.mainTable.getData();
   }
   ngOnInit() {
     this.getRoleList();
     this.getUserList();
-    this.mainTable.getData();
   }
   getColumns() {
-   const columns = [
-      { field: 'loginName', headerName: '登录名', pinned: 'left', checkboxSelection: true,filterArgs:{
-          filterTypeList:[
+    const columns = [
+      {
+        field: 'loginName', headerName: '登录名', pinned: 'left', checkboxSelection: true, filterArgs: {
+          filterTypeList: [
             'equals',
             'startsWith',
             'contains',
-            'endsWith'
-          ]
-        } },
-      { field: 'name', headerName: '姓名', pinned: 'left',filterArgs:{
+            'endsWith',
+          ],
+        },
+      },
+      {
+        field: 'name', headerName: '姓名', pinned: 'left', filterArgs: {
 
-          inputType:'select',
-          select:{
-            dataList:'userList',
-            label:'name',
-            value:'name'
+          inputType: 'select',
+          select: {
+            dataList: 'userList',
+            label: 'name',
+            value: 'name',
           },
 
-          filterTypeList:[
+          filterTypeList: [
             'equals',
             'startsWith',
             'contains',
-            'endsWith'
-          ]
+            'endsWith',
+          ],
 
-        }},
-      { field: 'no', headerName: '工号'},
-      { field: 'email', headerName: 'email'},
-      { field: 'phone', headerName: '电话'},
-      { field: 'mobile', headerName: '手机'},
+        },
+      },
+      { field: 'no', headerName: '工号' },
+      { field: 'email', headerName: 'email' },
+      { field: 'phone', headerName: '电话' },
+      { field: 'mobile', headerName: '手机' },
       {
         field: '角色', headerName: '角色', cellRenderer: (item) => {
           if (item.data.roleList) {
-            return item.data.roleList.map(( item ) => item.roleName).join(',');
+            return item.data.roleList.map((item) => item.roleName).join(',');
           }
           return '';
-        },  suppressSorting: true,suppressFilter:true
+        }, suppressSorting: true, suppressFilter: true,
       },
-      { field: 'createTime', headerName: '创建时间', fieldType:'datetime'
-     },
+      {
+        field: 'createTime', headerName: '创建时间', fieldType: 'datetime',
+      },
       {
         field: 'operation', headerName: '操作', pinned: 'right', cellRenderer: 'operationRenderComponent',
         width: 300,
@@ -76,17 +83,36 @@ export class SysUserComponent extends BasePage implements OnInit {
           { 'text': '修改', 'icon': 'edit', 'handle': this.openUpdateWin },
           { 'text': '删除', 'icon': 'delete', 'handle': this.delete },
         ],
-        suppressSorting: true,suppressFilter:true
+        suppressSorting: true, suppressFilter: true,
       },
     ];
-   return columns;
+    return columns;
   }
-
-
   delete(rowData, context) {
   }
-  generateArray(value: number): number[] {
-    return new Array(value);
+
+  export() {
+    const httpOptions = {
+      responseType:'arrayBuffer',
+      observe: 'response',// 默认是body,这里更改为response，这样在subscribe可以获得response信息
+    };
+
+     let searcData=  this.mainTable.getSearchData();
+    // @ts-ignore
+    this.http2.post('http://127.0.0.1:9003/sys/user/export',searcData,httpOptions).subscribe((response:any)=>{
+      // 这里服务端需要设置Access-Control-Expose-Headers: Content-Disposition ，这样客户端才可以读取到Content-disposition这个值，否则读取不到
+      console.log(response);
+      let contentDisposition = response.headers.get('content-disposition');
+      let contentType=response.headers.get('content-type');
+      let fileName =decodeURIComponent(contentDisposition.split(';')[1].split('filename=')[1]) ;
+      let data = new Blob([response.body], { type: contentType });
+      let downloadUrl = window.URL.createObjectURL(data);
+      let anchor = document.createElement('a');
+      anchor.href = downloadUrl;
+      anchor.download = fileName;
+      anchor.click();
+      window.URL.revokeObjectURL(downloadUrl);
+    });
   }
 
   /**
@@ -103,11 +129,12 @@ export class SysUserComponent extends BasePage implements OnInit {
     });
   }
 
-  getUserList(){
-    this.http.get('/sys/user/list').subscribe((data:any)=>{
-      this.userList=data.list;
+  getUserList() {
+    this.http.post('/sys/user/list').subscribe((data: any) => {
+      this.userList = data.list;
     });
   }
+
   /**
    * 打开添加窗口
    * @param tpl
@@ -115,15 +142,16 @@ export class SysUserComponent extends BasePage implements OnInit {
   openAddWin() {
     this.openSaveWin(null);
   }
+
   /**
    * 打开保存窗口
    * @param rowData
    */
   openSaveWin(rowData) {
-    this.saveWin.isShow=true;
-    this.saveWin.title='新建';
+    this.saveWin.isShow = true;
+    this.saveWin.title = '新建';
     if (rowData) {
-      this.saveWin.title='修改';
+      this.saveWin.title = '修改';
     }
     else {
       rowData = {};
@@ -143,12 +171,12 @@ export class SysUserComponent extends BasePage implements OnInit {
     this.saveData = rowData;
 
   }
+
   openUpdateWin(rowData) {
     this.openSaveWin(rowData);
   }
 
-  postSaveData()
-  {
+  postSaveData() {
     let roleList = this.roleList.filter((item) => {
       return item.checked == true;
     });
@@ -156,7 +184,9 @@ export class SysUserComponent extends BasePage implements OnInit {
     this.http.post('/sys/user/save', this.saveData).subscribe((data: any) => {
       this.msg.success(data.msg);
       this.mainTable.getData();
-      this.saveWin.isShow=false;
+      this.saveWin.isShow = false;
     });
   }
+
+
 }
