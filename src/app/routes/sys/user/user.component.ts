@@ -19,7 +19,10 @@ export class SysUserComponent extends BasePage implements OnInit,AfterViewInit {
   saveData: any = {};
   roleList: any[] = [];
   userList: any[] = [];
-
+  importData={
+    file:null,
+    userName:null
+  };
   constructor(protected injector: Injector, private http2: HttpClient) {
     super(injector);
   }
@@ -90,7 +93,19 @@ export class SysUserComponent extends BasePage implements OnInit,AfterViewInit {
   }
   delete(rowData, context) {
   }
-
+  fileChange(event){
+   let file=event.target.files[0];
+    this.importData.file=file;
+  }
+  sendImport(){
+    let formData: FormData = new FormData();
+    formData.append('file',this.importData.file,this.importData.file.name);
+    formData.append('userName',this.importData.userName);
+    this.http.post('/sys/user/importFile',formData).subscribe((response:any)=>{
+      this.msg.success(response.msg);
+      this.mainTable.getData();
+    });
+  }
   export() {
     const httpOptions = {
       responseType:'arrayBuffer',
@@ -99,7 +114,7 @@ export class SysUserComponent extends BasePage implements OnInit,AfterViewInit {
 
      let searcData=  this.mainTable.getSearchData();
     // @ts-ignore
-    this.http2.post('http://127.0.0.1:9003/sys/user/export',searcData,httpOptions).subscribe((response:any)=>{
+    this.http.post('/sys/user/exportFile',searcData,null,httpOptions).subscribe((response:any)=>{
       // 这里服务端需要设置Access-Control-Expose-Headers: Content-Disposition ，这样客户端才可以读取到Content-disposition这个值，否则读取不到
       console.log(response);
       let contentDisposition = response.headers.get('content-disposition');
@@ -176,7 +191,7 @@ export class SysUserComponent extends BasePage implements OnInit,AfterViewInit {
     this.openSaveWin(rowData);
   }
 
-  postSaveData() {
+  sendSaveData() {
     let roleList = this.roleList.filter((item) => {
       return item.checked == true;
     });

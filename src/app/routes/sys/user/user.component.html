@@ -6,13 +6,17 @@
     <i nz-icon type="search"></i>查询
   </button>
   <button nz-button [nzType]="'primary'" (click)="export()">
-    <i nz-icon type="search"></i>导出
+    <i nz-icon type="download"></i>导出
+  </button>
+  <input type="file"  name="file"  (change)="fileChange($event)"  >
+  <button nz-button [nzType]="'primary'" (click)="sendImport()">
+    <i nz-icon type="upload"></i>导入
   </button>
 </div>
 <w-table #mainTable [url]="'/sys/user/list'" [context]="this" [columns]="getColumns()"></w-table>
 <nz-modal [(nzVisible)]="saveWin.isShow"
           [nzTitle]="saveWin.title"
-          (nzOnOk)="postSaveData()"
+          (nzOnOk)="sendSaveData()"
           [nzBodyStyle]="{ maxHeight: '70vh', 'overflow-y': 'scroll'}"
           [nzWidth]="'90vw'"
           (nzOnCancel)="saveWin.isShow=false">

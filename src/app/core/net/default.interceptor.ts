@@ -40,7 +40,6 @@ export class DefaultInterceptor implements HttpInterceptor {
 
     // 可能会因为 `throw` 导出无法执行 `_HttpClient` 的 `end()` 操作
     this.injector.get(_HttpClient).end();
-    console.log(event);
     // 业务处理：一些通用操作
     switch (event.status) {
       case 200:
@@ -55,7 +54,6 @@ export class DefaultInterceptor implements HttpInterceptor {
             this.msg.error(body.msg);
             return throwError({});
           }
-
         }
         // if (event instanceof HttpResponse) {
         //     const body: any = event.body;
@@ -102,12 +100,10 @@ export class DefaultInterceptor implements HttpInterceptor {
     | HttpResponse<any>
     | HttpUserEvent<any>> {
     // 统一加上服务端前缀
-    console.log(req);
     let url = req.url;
     if (!url.startsWith('https://') && !url.startsWith('http://')) {
       url = environment.SERVER_URL + url;
     }
-
     const newReq = req.clone({
       url: url,
     });
@@ -149,11 +145,9 @@ export class DefaultInterceptor implements HttpInterceptor {
     if (body === null || body === undefined) {
       return body;
     }
-
     if (typeof body !== 'object') {
       return body;
     }
-
     for (const key of Object.keys(body)) {
       const value = body[key];
       if (value instanceof Date) {
