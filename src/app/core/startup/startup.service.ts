@@ -89,6 +89,11 @@ export class StartupService {
             icon: { type: 'icon', value: 'appstore' }
           },
           {
+            text: '角色',
+            link: '/sys/role',
+            icon: { type: 'icon', value: 'appstore' }
+          },
+          {
             text: '快捷菜单',
             icon: { type: 'icon', value: 'rocket' },
             shortcutRoot: true

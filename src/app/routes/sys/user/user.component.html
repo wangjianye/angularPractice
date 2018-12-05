@@ -1,5 +1,5 @@
 <div class="p-1">
-  <button nz-button [nzType]="'primary'" (click)="openAddWin(saveWin)">
+  <button nz-button [nzType]="'primary'" (click)="openSaveWin()">
     <i class="anticon anticon-plus"></i>添加
   </button>
   <button nz-button [nzType]="'primary'" (click)="mainTable.getData()">
@@ -20,7 +20,7 @@
           [nzBodyStyle]="{ maxHeight: '70vh', 'overflow-y': 'scroll'}"
           [nzWidth]="'90vw'"
           (nzOnCancel)="saveWin.isShow=false">
-  <form nz-form class="saveForm" nz-row  >
+  <form nz-form  nz-row  >
     <w-input label="登录名" nz-col   >
       <input nz-input [(ngModel)]="saveData.loginName" name="loginName" required>
     </w-input>

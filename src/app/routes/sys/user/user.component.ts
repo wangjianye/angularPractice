@@ -9,7 +9,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
   templateUrl: './user.component.html',
   styleUrls: ['./user.component.less'],
 })
-export class SysUserComponent extends BasePage implements OnInit,AfterViewInit {
+export class SysUserComponent extends BasePage implements OnInit, AfterViewInit {
   @ViewChild('mainTable') mainTable: WTableComponent;
   saveWin = {
     isShow: false,
@@ -19,20 +19,24 @@ export class SysUserComponent extends BasePage implements OnInit,AfterViewInit {
   saveData: any = {};
   roleList: any[] = [];
   userList: any[] = [];
-  importData={
-    file:null,
-    userName:null
+  importData = {
+    file: null,
+    userName: null,
   };
-  constructor(protected injector: Injector, private http2: HttpClient) {
+
+  constructor(protected injector: Injector) {
     super(injector);
   }
+
   ngAfterViewInit(): void {
     this.mainTable.getData();
   }
+
   ngOnInit() {
     this.getRoleList();
     this.getUserList();
   }
+
   getColumns() {
     const columns = [
       {
@@ -83,7 +87,7 @@ export class SysUserComponent extends BasePage implements OnInit,AfterViewInit {
         field: 'operation', headerName: '操作', pinned: 'right', cellRenderer: 'operationRenderComponent',
         width: 300,
         buttons: [
-          { 'text': '修改', 'icon': 'edit', 'handle': this.openUpdateWin },
+          { 'text': '修改', 'icon': 'edit', 'handle': this.openSaveWin },
           { 'text': '删除', 'icon': 'delete', 'handle': this.delete },
         ],
         suppressSorting: true, suppressFilter: true,
@@ -91,35 +95,38 @@ export class SysUserComponent extends BasePage implements OnInit,AfterViewInit {
     ];
     return columns;
   }
+
   delete(rowData, context) {
   }
-  fileChange(event){
-   let file=event.target.files[0];
-    this.importData.file=file;
+
+  fileChange(event) {
+    let file = event.target.files[0];
+    this.importData.file = file;
   }
-  sendImport(){
+
+  sendImport() {
     let formData: FormData = new FormData();
-    formData.append('file',this.importData.file,this.importData.file.name);
-    formData.append('userName',this.importData.userName);
-    this.http.post('/sys/user/importFile',formData).subscribe((response:any)=>{
+    formData.append('file', this.importData.file, this.importData.file.name);
+    formData.append('userName', this.importData.userName);
+    this.http.post('/sys/user/importFile', formData).subscribe((response: any) => {
       this.msg.success(response.msg);
       this.mainTable.getData();
     });
   }
+
   export() {
     const httpOptions = {
-      responseType:'arrayBuffer',
+      responseType: 'arrayBuffer',
       observe: 'response',// 默认是body,这里更改为response，这样在subscribe可以获得response信息
     };
-
-     let searcData=  this.mainTable.getSearchData();
+    let searcData = this.mainTable.getSearchData();
     // @ts-ignore
-    this.http.post('/sys/user/exportFile',searcData,null,httpOptions).subscribe((response:any)=>{
+    this.http.post('/sys/user/exportFile', searcData, null, httpOptions).subscribe((response: any) => {
       // 这里服务端需要设置Access-Control-Expose-Headers: Content-Disposition ，这样客户端才可以读取到Content-disposition这个值，否则读取不到
       console.log(response);
       let contentDisposition = response.headers.get('content-disposition');
-      let contentType=response.headers.get('content-type');
-      let fileName =decodeURIComponent(contentDisposition.split(';')[1].split('filename=')[1]) ;
+      let contentType = response.headers.get('content-type');
+      let fileName = decodeURIComponent(contentDisposition.split(';')[1].split('filename=')[1]);
       let data = new Blob([response.body], { type: contentType });
       let downloadUrl = window.URL.createObjectURL(data);
       let anchor = document.createElement('a');
@@ -151,14 +158,6 @@ export class SysUserComponent extends BasePage implements OnInit,AfterViewInit {
   }
 
   /**
-   * 打开添加窗口
-   * @param tpl
-   */
-  openAddWin() {
-    this.openSaveWin(null);
-  }
-
-  /**
    * 打开保存窗口
    * @param rowData
    */
@@ -184,11 +183,6 @@ export class SysUserComponent extends BasePage implements OnInit,AfterViewInit {
       });
     }
     this.saveData = rowData;
-
-  }
-
-  openUpdateWin(rowData) {
-    this.openSaveWin(rowData);
   }
 
   sendSaveData() {
@@ -202,6 +196,4 @@ export class SysUserComponent extends BasePage implements OnInit,AfterViewInit {
       this.saveWin.isShow = false;
     });
   }
-
-
 }

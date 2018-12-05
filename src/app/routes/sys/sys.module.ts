@@ -7,8 +7,10 @@ import { OperationRenderComponent } from '@shared/cell-render/operation-render/o
 import { TextFilterComponent } from '@shared/grid-filter/text-filter/text-filter.component';
 import { NZ_I18N, zh_CN } from 'ng-zorro-antd';
 import { MomentModule } from 'ngx-moment';
+import { SysRoleComponent } from './role/role.component';
 const COMPONENTS = [
-  SysUserComponent];
+  SysUserComponent,
+  SysRoleComponent];
 const COMPONENTS_NOROUNT = [];
 
 @NgModule({
