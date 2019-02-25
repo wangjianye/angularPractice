@@ -123,7 +123,6 @@ export class SysUserComponent extends BasePage implements OnInit, AfterViewInit 
     // @ts-ignore
     this.http.post('/sys/user/exportFile', searcData, null, httpOptions).subscribe((response: any) => {
       // 这里服务端需要设置Access-Control-Expose-Headers: Content-Disposition ，这样客户端才可以读取到Content-disposition这个值，否则读取不到
-      console.log(response);
       let contentDisposition = response.headers.get('content-disposition');
       let contentType = response.headers.get('content-type');
       let fileName = decodeURIComponent(contentDisposition.split(';')[1].split('filename=')[1]);

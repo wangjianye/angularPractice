@@ -52,23 +52,9 @@ export class DefaultInterceptor implements HttpInterceptor {
           const body: any = event.body;
           if (body.code) {
             this.msg.error(body.msg);
-            return throwError({});
+            return of(event);
           }
         }
-        // if (event instanceof HttpResponse) {
-        //     const body: any = event.body;
-        //     if (body && body.status !== 0) {
-        //         this.msg.error(body.msg);
-        //         // 继续抛出错误中断后续所有 Pipe、subscribe 操作，因此：
-        //         // this.http.get('/').subscribe() 并不会触发
-        //         return throwError({});
-        //     } else {
-        //         // 重新修改 `body` 内容为 `response` 内容，对于绝大多数场景已经无须再关心业务状态码
-        //         return of(new HttpResponse(Object.assign(event, { body: body.response })));
-        //         // 或者依然保持完整的格式
-        //         return of(event);
-        //     }
-        // }
         break;
       case 401: // 未登录状态码
         this.goTo('/passport/login');
@@ -115,7 +101,7 @@ export class DefaultInterceptor implements HttpInterceptor {
         if (event instanceof HttpResponse) {
           // @ts-ignore
           if (newReq.responseType == 'arrayBuffer') {// 若请求时预期的响应类型是arrayBuffer
-            let contentType = event.headers.get('content-type');// 读取服务端的传递过来的content-type值,服务端需要允许客户端读取该请求头才可以读取成功
+            let contentType = event.headers.get('Content-Type');// 读取服务端的传递过来的content-type值,服务端需要允许客户端读取该请求头才可以读取成功
             if (contentType && contentType.indexOf('application/json') >= 0) {
               let decoder = new TextDecoder('utf-8');
               let body = JSON.parse(decoder.decode(new Uint8Array(event.body)));// 将二进制值转换为json
