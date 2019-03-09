@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ICellRendererAngularComp } from 'ag-grid-angular';
-import { IAfterGuiAttachedParams, ICellRendererParams } from '../../../../../node_modules/ag-grid-community';
+import { IAfterGuiAttachedParams, ICellRendererParams } from '../../../../../../node_modules/ag-grid-community/main';
 import * as _ from 'lodash';
 
 @Component({

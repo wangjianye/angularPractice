@@ -1,8 +1,8 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { AgGridNg2 } from '../../../../node_modules/ag-grid-angular';
+import { AgGridNg2 } from '../../../../../node_modules/ag-grid-angular/main';
 import { _HttpClient } from '@delon/theme';
-import { OperationRenderComponent } from '@shared/cell-render/operation-render/operation-render.component';
-import { TextFilterComponent } from '@shared/grid-filter/text-filter/text-filter.component';
+import { OperationRenderComponent } from '../cell-render/operation-render/operation-render.component';
+import { TextFilterComponent } from '../grid-filter/text-filter/text-filter.component';
 import * as _ from 'lodash';
 import { HttpClient } from '@angular/common/http';
 
@@ -77,7 +77,6 @@ export class WTableComponent implements OnInit {
   }
 
   getData() {
-    console.log(this.url,'cc');
     if(this.url)
     {
       this.http2.post(this.url, this.getSearchData()).subscribe((data: any) => {
@@ -85,9 +84,7 @@ export class WTableComponent implements OnInit {
         this.page.total = data.total;
       });
     }
-
   }
-
   getSearchData() {
     let searchData = _.cloneDeep({
       page: this.page,

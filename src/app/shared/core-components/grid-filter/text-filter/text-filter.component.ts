@@ -1,6 +1,6 @@
 import { Component, ViewChild, ViewContainerRef } from '@angular/core';
 import { IAfterGuiAttachedParams, IDoesFilterPassParams, IFilterParams, RowNode } from 'ag-grid-community';
-import { IFilterAngularComp } from '../../../../../node_modules/ag-grid-angular';
+import { IFilterAngularComp } from '../../../../../../node_modules/ag-grid-angular/main';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 

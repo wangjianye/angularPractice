@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, Host, HostBinding, HostListener, Injector, OnInit, Optional, ViewChild } from '@angular/core';
 import { BasePage } from '@core/utils/basePage';
 import * as _ from 'lodash';
-import { WTableComponent } from '@shared/w-table/w-table.component';
+import { WTableComponent } from '@shared/core-components/w-table/w-table.component';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
@@ -89,6 +89,9 @@ export class SysUserComponent extends BasePage implements OnInit, AfterViewInit 
         buttons: [
           { 'text': '修改', 'icon': 'edit', 'handle': this.openSaveWin },
           { 'text': '删除', 'icon': 'delete', 'handle': this.delete },
+          { 'text': '删除', 'icon': 'delete', 'handle': this.delete },
+          { 'text': '删除', 'icon': 'delete', 'handle': this.delete },
+          { 'text': '删除', 'icon': 'delete', 'handle': this.delete },
         ],
         suppressSorting: true, suppressFilter: true,
       },
@@ -120,11 +123,15 @@ export class SysUserComponent extends BasePage implements OnInit, AfterViewInit 
       observe: 'response',// 默认是body,这里更改为response，这样在subscribe可以获得response信息
     };
     let searcData = this.mainTable.getSearchData();
+    // 这个拦截器为什么没有拦截住了
     // @ts-ignore
-    this.http.post('/sys/user/exportFile', searcData, null, httpOptions).subscribe((response: any) => {
+    this.http.post('/sys/user/exportFile', searcData, {}, httpOptions).subscribe((response: any) => {
       // 这里服务端需要设置Access-Control-Expose-Headers: Content-Disposition ，这样客户端才可以读取到Content-disposition这个值，否则读取不到
+      console.log(response);
       let contentDisposition = response.headers.get('content-disposition');
       let contentType = response.headers.get('content-type');
+      console.log(contentType);
+      console.log(contentDisposition);
       let fileName = decodeURIComponent(contentDisposition.split(';')[1].split('filename=')[1]);
       let data = new Blob([response.body], { type: contentType });
       let downloadUrl = window.URL.createObjectURL(data);

@@ -1,0 +1,24 @@
+<div class="p-1">
+  <button nz-button [nzType]="'primary'" (click)="openSaveWin()">
+    <i class="anticon anticon-plus"></i>添加
+  </button>
+  <button nz-button [nzType]="'primary'" (click)="mainTable.getData()">
+    <i nz-icon type="search"></i>查询
+  </button>
+</div>
+<w-table #mainTable [url]="'/sys/role/list'" [context]="this" [columns]="getColumns()"></w-table>
+<nz-modal [(nzVisible)]="saveWin.isShow"
+          [nzTitle]="saveWin.title"
+          (nzOnOk)="sendSaveData()"
+          [nzBodyStyle]="{ maxHeight: '70vh', 'overflow-y': 'scroll'}"
+          [nzWidth]="'90vw'"
+          (nzOnCancel)="saveWin.isShow=false">
+  <form nz-form  nz-row  >
+    <w-input label="角色名" nz-col   >
+      <input nz-input [(ngModel)]="saveData.roleName" name="roleName" required>
+    </w-input>
+   <w-input label="角色类型" nz-col>
+     <input nz-input [(ngModel)]="saveData.roleType" name="roleType"/>
+   </w-input>
+   </form>
+</nz-modal>

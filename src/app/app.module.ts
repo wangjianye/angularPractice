@@ -33,18 +33,18 @@ const LANG_PROVIDES = [
 // #endregion
 
 // #region JSON Schema form (using @delon/form)
-import { JsonSchemaModule } from '@shared/json-schema/json-schema.module';
+import { JsonSchemaModule } from '@shared/core-components/json-schema/json-schema.module';
 const FORM_MODULES = [ JsonSchemaModule ];
 // #endregion
 
 
 // #region Http Interceptors
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { SimpleInterceptor } from '@delon/auth';
+import { JWTInterceptor, SimpleInterceptor } from '@delon/auth';
 import { DefaultInterceptor } from '@core/net/default.interceptor';
 const INTERCEPTOR_PROVIDES = [
 
-  { provide: HTTP_INTERCEPTORS, useClass: SimpleInterceptor, multi: true},
+  { provide: HTTP_INTERCEPTORS, useClass: JWTInterceptor, multi: true},
   { provide: HTTP_INTERCEPTORS, useClass: DefaultInterceptor, multi: true},
 ];
 // #endregion
@@ -90,7 +90,6 @@ import { MomentModule } from 'ngx-moment';
     AgGridModule.withComponents([]),
     HttpClientModule,
     DelonModule.forRoot(),
-    CoreModule,
     SharedModule,
     LayoutModule,
     RoutesModule,

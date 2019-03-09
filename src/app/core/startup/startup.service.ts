@@ -62,8 +62,8 @@ export class StartupService {
   
   private viaMock(resolve: any, reject: any) {
     const app: any = {
-      name: `出入库管理系统`,
-      description: `出入库管理系统`
+      name: `adminxx`,
+      description: `adminxx`
     };
     const user: any = {
       name: 'Admin',
@@ -94,9 +94,9 @@ export class StartupService {
             icon: { type: 'icon', value: 'appstore' }
           },
           {
-            text: '快捷菜单',
-            icon: { type: 'icon', value: 'rocket' },
-            shortcutRoot: true
+            text: '生成器',
+            link: '/gen/index',
+            icon: { type: 'icon', value: 'appstore' }
           }
         ]
       }

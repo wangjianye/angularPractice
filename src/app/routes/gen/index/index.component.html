@@ -1,0 +1,38 @@
+<div class="card">
+  <div class="card-body">
+    表
+    <nz-select style="width: 120px;"  nzallowclear [(ngModel)]="currentTable">
+      <nz-option [nzValue]="table" nzLabel="{{table.name}}" *ngFor="let table of genTableList" ></nz-option>
+    </nz-select>
+  </div>
+</div>
+<div *ngIf="currentTable" class="card">
+  <div class="card-body">
+    &lt;resultMap id="mainResultMap" type="com.wy.modules.sys.entity.{{currentTable.name | stringCamelCase |stringUpperFirst}}" &gt;
+    <br/>
+    <ng-container *ngIf="currentTable.primaryKeyColumnList.length==1">
+      &lt;result property="id"  column="{{currentTable.primaryKeyColumnList[0]}}" /&gt;
+    </ng-container>
+    <ng-container *ngFor="let column of currentTable.columnList">
+      <ng-container [ngSwitch]="column.name" >
+        <ng-container   *ngSwitchCase="'create_by_sys_user_id'">
+          &lt;association property="createBy" javaType="com.wy.modules.sys.entity.User"&gt;
+          &lt;id property="id" column="create_by_sys_user_id"/&gt;
+          &lt;/association&gt;
+        </ng-container>
+        <ng-container   *ngSwitchCase="'update_by_sys_user_id'">
+          &lt;association property="updateBy" javaType="com.wy.modules.sys.entity.User"&gt;
+          &lt;id property="id" column="update_by_sys_user_id"/&gt;
+          &lt;/association&gt;
+        </ng-container>
+        <ng-container *ngSwitchDefault>
+          <ng-container  *ngIf="!currentTable.primaryKeyColumnList.includes(column.name)">
+            &lt;result column="{{column.name}}"  property="{{column.name | stringCamelCase }}"/&gt;
+          </ng-container >
+        </ng-container>
+      </ng-container>
+      <br/>
+    </ng-container>
+    &lt; /resultMap &gt;
+  </div>
+</div>
