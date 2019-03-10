@@ -2,13 +2,11 @@ import { AfterViewInit, Component, Injector, OnInit, ViewChild } from '@angular/
 import { BasePage } from '@core/utils/basePage';
 import { type } from 'os';
 import { getTypeOf } from '@angular/core/testing/src/lang_utils';
-import { InsertSqlValuePartPipe } from './InsertSqlValuePartPipe';
 import * as _ from 'lodash';
 @Component({
   selector: 'app-gen-index',
   templateUrl: './index.component.html',
   styleUrls: ['./index.component.less'],
-  providers:[InsertSqlValuePartPipe]
 })
 export class GenIndexComponent extends BasePage implements OnInit ,AfterViewInit{
   currentTable:any;
