@@ -1,38 +1,169 @@
+<nz-anchor nzOffsetTop="120" class="gen-anchor" *ngIf="currentTable">
+  <nz-link nzHref="#table" nzTitle="表"></nz-link>
+  <nz-link nzHref="#mainResultMap" nzTitle="mainResultMap"></nz-link>
+  <nz-link nzHref="#mainColumns" nzTitle="mainColumns"></nz-link>
+  <nz-link nzHref="#get" nzTitle="get"></nz-link>
+  <nz-link nzHref="#insert" nzTitle="insert"></nz-link>
+</nz-anchor>
 <div class="card">
   <div class="card-body">
+    <a name="table" id="table"></a>
     表
-    <nz-select style="width: 120px;"  nzallowclear [(ngModel)]="currentTable">
-      <nz-option [nzValue]="table" nzLabel="{{table.name}}" *ngFor="let table of genTableList" ></nz-option>
+    <nz-select style="width: 120px;" nzallowclear [(ngModel)]="currentTable">
+      <nz-option [nzValue]="table" nzLabel="{{table.name}}" *ngFor="let table of genTableList"></nz-option>
     </nz-select>
   </div>
 </div>
-<div *ngIf="currentTable" class="card">
+
+<!--mainResultMapCard-->
+<div class="card" *ngIf="currentTable" >
   <div class="card-body">
-    &lt;resultMap id="mainResultMap" type="com.wy.modules.sys.entity.{{currentTable.name | stringCamelCase |stringUpperFirst}}" &gt;
+    <a name="mainResultMap" id="mainResultMap"></a>
+    &lt;resultMap id="mainResultMap"
+    type="com.wy.modules.sys.entity.{{currentTable.name | stringCamelCase |stringUpperFirst}}"&gt;
     <br/>
     <ng-container *ngIf="currentTable.primaryKeyColumnList.length==1">
-      &lt;result property="id"  column="{{currentTable.primaryKeyColumnList[0]}}" /&gt;
+      &lt;result property="id" column="{{currentTable.primaryKeyColumnList[0]}}" /&gt;
     </ng-container>
     <ng-container *ngFor="let column of currentTable.columnList">
-      <ng-container [ngSwitch]="column.name" >
-        <ng-container   *ngSwitchCase="'create_by_sys_user_id'">
-          &lt;association property="createBy" javaType="com.wy.modules.sys.entity.User"&gt;
-          &lt;id property="id" column="create_by_sys_user_id"/&gt;
-          &lt;/association&gt;
-        </ng-container>
-        <ng-container   *ngSwitchCase="'update_by_sys_user_id'">
-          &lt;association property="updateBy" javaType="com.wy.modules.sys.entity.User"&gt;
-          &lt;id property="id" column="update_by_sys_user_id"/&gt;
-          &lt;/association&gt;
-        </ng-container>
-        <ng-container *ngSwitchDefault>
-          <ng-container  *ngIf="!currentTable.primaryKeyColumnList.includes(column.name)">
-            &lt;result column="{{column.name}}"  property="{{column.name | stringCamelCase }}"/&gt;
-          </ng-container >
-        </ng-container>
+      <ng-container
+        *ngIf="!currentTable.primaryKeyColumnList.includes(column.name) && column.name!='update_by_sys_user_id' && column.name!='create_by_sys_user_id'">
+        &lt;result property="{{column.name | stringCamelCase }}" column="{{column.name}}"/&gt;
+        <br/>
       </ng-container>
+    </ng-container>
+    <ng-container *ngFor="let column of currentTable.columnList">
+      <ng-container *ngIf="column.name=='update_by_sys_user_id'">
+        &lt;association property="updateBy" javaType="com.wy.modules.sys.entity.User"&gt;
+        <br/>
+        &lt;id property="id" column="update_by_sys_user_id"/&gt;
+        <br/>
+        &lt;/association&gt;
+        <br/>
+      </ng-container>
+      <ng-container *ngIf="column.name=='create_by_sys_user_id'">
+        &lt;association property="createBy" javaType="com.wy.modules.sys.entity.User"&gt;
+        <br/>
+        &lt;id property="id" column="create_by_sys_user_id"/&gt;
+        <br/>
+        &lt;/association&gt;
+        <br/>
+      </ng-container>
+
+    </ng-container>
+    &lt;/resultMap&gt;
+  </div>
+</div>
+<!--mainColumnsCard-->
+<div class="card" *ngIf="currentTable" >
+  <a name="mainColumns" id="mainColumns"></a>
+  <div class="card-body">
+    &lt;sql id="mainColumns"&gt;
+    <br/>
+    <ng-container *ngFor="let column of currentTable.columnList">
+      {{currentTable.name}}.{{column.name}}
       <br/>
     </ng-container>
-    &lt; /resultMap &gt;
+    &lt;/sql&gt;
+  </div>
+</div>
+<!--mainJoinCard-->
+<div class="card" *ngIf="currentTable">
+  <div class="card-body">
+    &lt;sql id="mainJoin"&gt;
+    &lt;/sql&gt;
+  </div>
+</div>
+<!--getCard-->
+<div class="card" *ngIf="currentTable" >
+  <a name="get" id="get"></a>
+  <div class="card-body">
+    &lt;select id="get" resultType="com.wy.modules.sys.entity.{{currentTable.name | stringCamelCase |stringUpperFirst}}"
+    resultMap="mainResultMap"&gt;
+    <br/>
+    SELECT
+    <br/>
+    &lt;include refid="mainColumns"/&gt;
+    FROM {{currentTable.name}}
+    <br/>
+    &lt;include refid="mainJoins"/&gt;
+    <br/>
+    WHERE {{currentTable.name}}.{{currentTable.primaryKeyColumnList[0]}} = #{{'{'}}id{{'}'}}
+    <br/>
+    &lt;/select&gt;
+  </div>
+  <div class="card" *ngIf="currentTable">
+    <div class="card-body">
+      &lt;select id="findList"
+      resultType="com.wy.modules.sys.entity.{{currentTable.name|stringCamelCase|stringUpperFirst}}"
+      resultMap="mainResultMap"&gt;
+      <br/>
+      select
+      <br/>
+      &lt;include refid="mainColumns"/&gt;
+      <br/>
+      from {{currentTable.name}}
+      <br/>
+      &lt;include refid="mainJoins"/&gt;
+      <br/>
+      where {{currentTable.name}}.del_flag=#{{'{'}}DEL_FLAG_NORMAL{{'}'}}
+      <br/>
+      &lt;choose&gt;
+      <br/>
+      &lt;when test="page!=null and page.orderBy != null and page.orderBy != ''"&gt;
+      <br/>
+      ORDER BY ${{'{'}}page.orderBy{{'}'}}
+      <br/>
+      &lt;/when&gt;
+      <br/>
+      &lt;otherwise&gt;
+      <br/>
+      ORDER BY create_time
+      <br/>
+      &lt;/otherwise&gt;
+      <br/>
+      &lt;/choose&gt;
+      &lt;/select&gt;
+    </div>
+  </div>
+</div>
+<div class="card" *ngIf="currentTable">
+  <a name="insert" id="insert"></a>
+  <div class="card-body">
+    &lt;insert id="insert"&gt;
+    <br/>
+    INSERT INTO {{currentTable.name}}(
+    <ng-container *ngIf="currentTable.primaryKeyColumnList.length>1">
+      <ng-container *ngFor="let columnName of currentTable.primaryKeyColumnList">
+        {{columnName}},
+      </ng-container>
+    </ng-container>
+    <ng-container *ngIf="currentTable.primaryKeyColumnList.length==1">
+      {{currentTable.primaryKeyColumnList[0]}},
+    </ng-container>
+    <br/>
+    <ng-container *ngFor="let column of currentTable.columnList;let i=index;">
+      <ng-container *ngIf="i <currentTable.columnList.length-1 && !currentTable.primaryKeyColumnList.includes(column.name)">
+        {{column.name}},
+      </ng-container>
+       <ng-container *ngIf="i==currentTable.columnList.length-1 && !currentTable.primaryKeyColumnList.includes(column.name)">
+         {{column.name}}
+       </ng-container>
+    </ng-container>
+    )
+    values(
+    <ng-container *ngIf="currentTable.primaryKeyColumnList.length>1">
+      <ng-container *ngFor="let columnName of currentTable.primaryKeyColumnList">
+        {{'{'}}{{columnName|stringCamelCase}}{{'}'}},
+      </ng-container>
+    </ng-container>
+    <ng-container *ngIf="currentTable.primaryKeyColumnList.length==1">
+      {{'{'}}{{'{'}}id{{'}'}}{{'}'}},
+    </ng-container>
+    <ng-container *ngFor="let column of currentTable.columnList;let i=index;">
+      {{this.transform1(column.name, currentTable.columnList,currentTable.primaryKeyColumnList,i)}}
+    </ng-container>
+    )
+    &lt;/insert&gt;
   </div>
 </div>

@@ -4,7 +4,7 @@ import * as _ from 'lodash';
   name:'stringCamelCase'
 })
 export  class StringCamelCase implements   PipeTransform{
-  transform(value: any, ...args: any[]): any {
+  transform(value: any): any {
     return _.camelCase(value);
   }
 
